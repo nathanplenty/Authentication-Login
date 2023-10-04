@@ -14,6 +14,12 @@ var (
 	db *sql.DB
 )
 
+// Benutzername und Passwort für die Pseudo-Authentifizierung
+const (
+	fakeUsername = "admin"
+	fakePassword = "adminpass"
+)
+
 func main() {
 	var err error
 	db, err = sql.Open("sqlite3", "database.db")
@@ -111,14 +117,8 @@ func loginHandler(w http.ResponseWriter, r *http.Request) {
 	username := r.FormValue("username")
 	password := r.FormValue("password")
 
-	var storedPassword string
-	err := db.QueryRow("SELECT password FROM users WHERE username = ?", username).Scan(&storedPassword)
-	if err != nil {
-		http.Redirect(w, r, "/", http.StatusSeeOther)
-		return
-	}
-
-	if storedPassword == password {
+	// Überprüfe die Pseudo-Authentifizierung
+	if username == fakeUsername && password == fakePassword {
 		http.Redirect(w, r, "/dashboard", http.StatusSeeOther)
 		return
 	}
